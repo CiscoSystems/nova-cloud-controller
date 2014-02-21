@@ -76,6 +76,7 @@ NEUTRON_CONF = '/etc/neutron/neutron.conf'
 HAPROXY_CONF = '/etc/haproxy/haproxy.cfg'
 APACHE_CONF = '/etc/apache2/sites-available/openstack_https_frontend'
 APACHE_24_CONF = '/etc/apache2/sites-available/openstack_https_frontend.conf'
+OPENRC = '/root/openrc'
 NEUTRON_DEFAULT = '/etc/default/neutron-server'
 QUANTUM_DEFAULT = '/etc/default/quantum-server'
 
@@ -138,6 +139,10 @@ BASE_RESOURCE_MAP = OrderedDict([
     (APACHE_24_CONF, {
         'contexts': [nova_cc_context.ApacheSSLContext()],
         'services': ['apache2'],
+    }),
+    (OPENRC, {
+        'contexts': [nova_cc_context.OpenrcContext(), context.IdentityServiceContext()],
+        'services': [],
     }),
 ])
 
@@ -508,3 +513,9 @@ def neutron_plugin():
     # quantum-plugin config setting can be safely overriden
     # as we only supported OVS in G/neutron
     return config('neutron-plugin') or config('quantum-plugin')
+
+def n1kv_add_repo():
+    src = config('n1kv-source')
+    if src.startswith('ppa:') or src.startswith('deb'):
+        configure_installation_source(src)
+

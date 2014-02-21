@@ -67,6 +67,27 @@ class NeutronContext(object):
 
         return ovs_ctxt
 
+    def n1kv_ctxt(self):
+        n1kv_ctxt = {
+            'neutron_plugin': 'n1kv',
+             # quantum.conf
+            'core_plugin': network_plugin_attribute(self.plugin, 'driver'),
+            # NOTE: network api class in template for each release.
+            # nova.conf
+            #'libvirt_vif_driver': n_driver,
+            #'libvirt_use_virtio_for_bridges': True,
+            # ovs config
+            'local_ip': unit_private_ip(),
+            'vsm_ip': config('n1kv-vsm-ip'),
+            'vsm_username': config('n1kv-vsm-username'),
+            'vsm_password': config('n1kv-vsm-password'),
+        }
+
+        if self.neutron_security_groups:
+            n1kv_ctxt['neutron_security_groups'] = True
+
+        return n1kv_ctxt
+
     def __call__(self):
 
         if self.network_manager not in ['quantum', 'neutron']:
@@ -81,6 +102,9 @@ class NeutronContext(object):
 
         if self.plugin == 'ovs':
             ctxt.update(self.ovs_ctxt())
+
+        if self.plugin == 'n1kv':
+            ctxt.update(self.n1kv_ctxt())
 
         _save_flag_file(path='/etc/nova/quantum_plugin.conf', data=self.plugin)
         _save_flag_file(path='/etc/nova/neutron_plugin.conf', data=self.plugin)
@@ -115,6 +139,16 @@ class NeutronComputeContext(NeutronContext):
         })
         return ctxt
 
+    def n1kv_ctxt(self):
+        ctxt = super(NeutronComputeContext, self).n1kv_ctxt()
+        if os_release('nova-common') == 'folsom':
+            n_driver = 'nova.virt.libvirt.vif.LibvirtHybridOVSBridgeDriver'
+        else:
+            n_driver = 'nova.virt.libvirt.vif.LibvirtGenericVIFDriver'
+        ctxt.update({
+            'libvirt_vif_driver': n_driver,
+        })
+        return ctxt
 
 class NeutronCCContext(NeutronContext):
     interfaces = []
@@ -157,6 +191,17 @@ def quantum_plugins():
                       'QuantumPlugin.NvpPluginV2',
             'services': [],
             'packages': ['quantum-plugin-nicira'],
+        },
+        'n1kv': {
+            'config': '/etc/quantum/plugins/cisco/cisco_plugins.ini',
+            'driver': 'quantum.plugins.cisco.network_plugin.PluginV2',
+            'contexts': [
+                NeutronContext(),
+                context.SharedDBContext(user=config('neutron-database-user'),
+                                        database=config('neutron-database'),
+                                        relation_prefix='neutron')],
+            'services': ['quantum-plugin-cisco'],
+            'packages': [['quantum-plugin-cisco']],
         }
     }
 
@@ -182,6 +227,16 @@ def neutron_plugins():
                       'NeutronPlugin.NvpPluginV2',
             'services': [],
             'packages': ['neutron-plugin-nicira'],
+        },
+        'n1kv': {
+            'config': '/etc/neutron/plugins/cisco/cisco_plugins.ini',
+            'driver': 'neutron.plugins.cisco.network_plugin.PluginV2',
+            'contexts': [
+                context.SharedDBContext(user=config('neutron-database-user'),
+                                        database=config('neutron-database'),
+                                        relation_prefix='neutron')],
+            'services': ['neutron-plugin-cisco'],
+            'packages': [['neutron-plugin-cisco']],
         }
     }
 
