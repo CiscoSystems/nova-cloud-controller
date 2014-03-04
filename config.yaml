@@ -165,21 +165,11 @@ options:
   n1kv-vsm-ip:
     default: 10.10.10.10
     description: IP address to connect to Cisco Nexus1000v VSM
-  n1kv-source:
-    type: string
-    default: distro
-    description: |
-      Optional configuration to support use of additional sources such as:
-      .
-         - ppa:myteam/ppa 
-         - deb http://my.archive.com/ubuntu main|KEYID
-      .
-      Note that this is used only for Cisco n1kv plugin.
-    keystone-usrname:
+  keystone-usrname:
       type: string
       default: admin
       description: Username to connect to keystone
-    keystone-password:
+  keystone-password:
       type: string
       default: openstack
       description: Password to connect to keystone
