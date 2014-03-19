@@ -173,5 +173,3 @@ class OpenrcContext(context.IdentityServiceContext):
         ctxt['os_username'] = config('keystone-usrname')
         ctxt['os_password'] = config('keystone-password')
         return ctxt
-
-

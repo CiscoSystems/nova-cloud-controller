@@ -85,7 +85,7 @@ def install():
     if (plugin == 'n1kv'):
         command = "cp templates/havana/openrc /root/"
         process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
-        output = process.communicate()[0]
+        process.communicate()[0]
     configure_installation_source(config('openstack-origin'))
     apt_update()
     apt_install(determine_packages(), fatal=True)

@@ -513,4 +513,3 @@ def neutron_plugin():
     # quantum-plugin config setting can be safely overriden
     # as we only supported OVS in G/neutron
     return config('neutron-plugin') or config('quantum-plugin')
-

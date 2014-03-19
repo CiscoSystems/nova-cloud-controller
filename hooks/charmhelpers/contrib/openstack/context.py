@@ -416,7 +416,7 @@ class NeutronContext(object):
         driver = neutron_plugin_attribute(self.plugin, 'driver',
                                           self.network_manager)
         n1kv_config = neutron_plugin_attribute(self.plugin, 'config',
-                                          self.network_manager)
+                                               self.network_manager)
         n1kv_ctxt = {
             'core_plugin': driver,
             'neutron_plugin': 'n1kv',

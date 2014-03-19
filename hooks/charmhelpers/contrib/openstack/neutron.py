@@ -58,12 +58,12 @@ def quantum_plugins():
             'contexts': [
                 context.SharedDBContext(user=config('neutron-database-user'),
                                         database=config('neutron-database'),
-                                        relation_prefix='neutron')], 
+                                        relation_prefix='neutron')],
             'services': ['quantum-plugin-cisco'],
             'packages': [['quantum-plugin-cisco']],
             'server_packages': ['quantum-server',
                                 'quantum-plugin-cisco'],
-            'server_services': ['quantum-server'] 
+            'server_services': ['quantum-server']
         }
     }
 

@@ -70,7 +70,7 @@ class NeutronContext(object):
     def n1kv_ctxt(self):
         n1kv_ctxt = {
             'neutron_plugin': 'n1kv',
-             # quantum.conf
+            # quantum.conf
             'core_plugin': network_plugin_attribute(self.plugin, 'driver'),
             # NOTE: network api class in template for each release.
             # nova.conf
@@ -149,6 +149,7 @@ class NeutronComputeContext(NeutronContext):
             'libvirt_vif_driver': n_driver,
         })
         return ctxt
+
 
 class NeutronCCContext(NeutronContext):
     interfaces = []
